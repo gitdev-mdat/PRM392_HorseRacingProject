@@ -12,16 +12,42 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PRM_GroupProject"
         tools:targetApi="31">
+        
+        <!-- Splash Activity - Launcher Activity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.PRM_GroupProject">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- Login Activity -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM_GroupProject" />
+        
+        <!-- Register Activity -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM_GroupProject" />
+        
+        <!-- Menu Activity -->
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM_GroupProject" />
+        
+        <!-- Main Activity (Game) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PRM_GroupProject" />
+            
     </application>
 
 </manifest>
