@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+
 
 import java.util.Random;
 
@@ -17,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnStart, btnReset, btnMenu;
     Handler handler = new Handler();
     Runnable runnable;
+    Button btnAddPoints;
+
 
     ImageView winnerIcon;
     TextView winnerText, totalWinText, currentPointsText;
@@ -58,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.btnStart);
         btnReset = findViewById(R.id.btnReset);
         btnMenu = findViewById(R.id.btnMenu);
+        btnAddPoints = findViewById(R.id.btnAddPoints);
+
+        btnAddPoints.setOnClickListener(v -> showAddPointsDialog());
+
 
         winnerIcon = findViewById(R.id.winnerIcon);
         winnerText = findViewById(R.id.winnerText);
@@ -209,6 +217,41 @@ public class MainActivity extends AppCompatActivity {
     private void updatePointsDisplay() {
         currentPointsText.setText("Điểm hiện tại: " + currentPoints);
     }
+    private void showAddPointsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Nạp thêm điểm");
+
+        final EditText input = new EditText(this);
+        input.setHint("Nhập số điểm muốn nạp");
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+
+        builder.setPositiveButton("Nạp", (dialog, which) -> {
+            String value = input.getText().toString().trim();
+            if (!value.isEmpty()) {
+                try {
+                    int addedPoints = Integer.parseInt(value);
+                    if (addedPoints > 0) {
+                        currentPoints += addedPoints;
+                        userManager.updatePoints(currentPoints);
+                        updatePointsDisplay();
+                        Toast.makeText(this, "Đã nạp " + addedPoints + " điểm!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Số điểm phải lớn hơn 0!", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Giá trị không hợp lệ!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Vui lòng nhập số điểm!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
 
     private void goToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
