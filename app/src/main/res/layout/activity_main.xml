@@ -1,120 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Mỗi hàng: checkbox + progress + bet -->
-        <LinearLayout android:orientation="horizontal"
+        <!-- Header với điểm số -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🐎 HORSE RACING 🐎"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#8B4513"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/currentPointsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Điểm hiện tại: 1000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FF6F00"
+                android:layout_gravity="center"
+                android:background="#FFF9C4"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+        <!-- Mỗi hàng: checkbox + progress + bet -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn ngựa và đặt cược:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Ngựa 1 -->
+        <LinearLayout 
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🐎1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
 
             <CheckBox android:id="@+id/check1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+                
             <ProgressBar android:id="@+id/progress1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 style="@android:style/Widget.ProgressBar.Horizontal"/>
 
             <EditText
                 android:id="@+id/bet1"
-                android:layout_width="60dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
+                android:hint="Điểm"
                 android:inputType="number"
+                android:textSize="14sp"
+                android:background="@drawable/edittext_background"
+                android:padding="8dp"
                 android:minHeight="48dp" />
         </LinearLayout>
 
-        <LinearLayout android:orientation="horizontal"
+        <!-- Ngựa 2 -->
+        <LinearLayout 
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🐎2"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
 
             <CheckBox android:id="@+id/check2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+                
             <ProgressBar android:id="@+id/progress2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 style="@android:style/Widget.ProgressBar.Horizontal"/>
 
             <EditText
                 android:id="@+id/bet2"
-                android:layout_width="60dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
+                android:hint="Điểm"
                 android:inputType="number"
+                android:textSize="14sp"
+                android:background="@drawable/edittext_background"
+                android:padding="8dp"
                 android:minHeight="48dp" />
         </LinearLayout>
 
-        <LinearLayout android:orientation="horizontal"
+        <!-- Ngựa 3 -->
+        <LinearLayout 
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🐎3"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
 
             <CheckBox android:id="@+id/check3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+                
             <ProgressBar android:id="@+id/progress3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 style="@android:style/Widget.ProgressBar.Horizontal"/>
 
             <EditText
                 android:id="@+id/bet3"
-                android:layout_width="60dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
+                android:hint="Điểm"
                 android:inputType="number"
+                android:textSize="14sp"
+                android:background="@drawable/edittext_background"
+                android:padding="8dp"
                 android:minHeight="48dp" />
         </LinearLayout>
 
-        <!-- Nút Start / Reset -->
+        <!-- Nút điều khiển -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginBottom="16dp">
 
             <Button android:id="@+id/btnStart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start"/>
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🏁 START"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#fff"
+                android:background="@drawable/button_primary"
+                android:layout_marginEnd="8dp"/>
 
             <Button android:id="@+id/btnReset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset"
-                android:layout_marginLeft="16dp"/>
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🔄 RESET"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#fff"
+                android:background="@drawable/button_secondary"
+                android:layout_marginStart="8dp"/>
         </LinearLayout>
+
+        <Button android:id="@+id/btnMenu"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="📊 QUAY VỀ MENU"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:background="#607D8B"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Box hiện ngựa thắng -->
         <LinearLayout
             android:id="@+id/winBox"
             android:visibility="gone"
             android:orientation="vertical"
-            android:background="#FFFF99"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"
+            android:background="#E8F5E8"
+            android:padding="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:elevation="4dp">
 
             <ImageView
                 android:id="@+id/winnerIcon"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:src="@drawable/horse1" />
+                android:src="@drawable/horse1"
+                android:layout_marginBottom="12dp" />
 
             <TextView
                 android:id="@+id/winnerText"
@@ -122,17 +249,33 @@
                 android:layout_height="wrap_content"
                 android:text="Ngựa 1 chiến thắng!"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="20sp"
+                android:textColor="#2E7D32"
                 android:layout_gravity="center"
-                android:layout_marginTop="8dp" />
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/totalWinText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng điểm thắng: 0"
-                android:layout_gravity="center"
-                android:layout_marginTop="4dp" />
+                android:text="Điểm sau ván: 1000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+                android:layout_gravity="center" />
         </LinearLayout>
+        
+        <!-- Hướng dẫn -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 Mẹo: Chọn ngựa, đặt cược, thắng được gấp đôi!"
+            android:textSize="14sp"
+            android:textColor="#666"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="#F0F8FF"
+            android:padding="12dp" />
+            
     </LinearLayout>
 </ScrollView>

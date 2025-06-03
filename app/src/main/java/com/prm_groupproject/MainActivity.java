@@ -1,5 +1,6 @@
 package com.prm_groupproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -13,21 +14,30 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar[] progresses;
     CheckBox[] checks;
     EditText[] bets;
-    Button btnStart, btnReset;
+    Button btnStart, btnReset, btnMenu;
     Handler handler = new Handler();
     Runnable runnable;
-    int totalWin = 0;
 
     ImageView winnerIcon;
-    TextView winnerText, totalWinText;
+    TextView winnerText, totalWinText, currentPointsText;
     LinearLayout winBox;
 
     boolean isRacing = false;
+    UserManager userManager;
+    int currentPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        userManager = new UserManager(this);
+        
+        // Kiểm tra đã đăng nhập chưa
+        if (!userManager.isLoggedIn()) {
+            goToLogin();
+            return;
+        }
 
         progresses = new ProgressBar[]{
                 findViewById(R.id.progress1),
@@ -47,18 +57,67 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart = findViewById(R.id.btnStart);
         btnReset = findViewById(R.id.btnReset);
+        btnMenu = findViewById(R.id.btnMenu);
 
         winnerIcon = findViewById(R.id.winnerIcon);
         winnerText = findViewById(R.id.winnerText);
         totalWinText = findViewById(R.id.totalWinText);
+        currentPointsText = findViewById(R.id.currentPointsText);
         winBox = findViewById(R.id.winBox);
+
+        // Load điểm hiện tại
+        currentPoints = userManager.getTotalPoints();
+        updatePointsDisplay();
 
         btnStart.setOnClickListener(v -> {
             if (isRacing) return;
-            startRace();
+            if (validateBets()) {
+                startRace();
+            }
         });
 
         btnReset.setOnClickListener(v -> resetRace());
+        btnMenu.setOnClickListener(v -> goToMenu());
+    }
+
+    private boolean validateBets() {
+        int totalBet = 0;
+        boolean hasValidBet = false;
+
+        for (int i = 0; i < 3; i++) {
+            if (checks[i].isChecked()) {
+                String betStr = bets[i].getText().toString().trim();
+                if (betStr.isEmpty()) {
+                    Toast.makeText(this, "Vui lòng nhập số tiền cược cho ngựa " + (i + 1), Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                
+                try {
+                    int bet = Integer.parseInt(betStr);
+                    if (bet <= 0) {
+                        Toast.makeText(this, "Số tiền cược phải lớn hơn 0!", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    totalBet += bet;
+                    hasValidBet = true;
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Số tiền cược không hợp lệ!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        }
+
+        if (!hasValidBet) {
+            Toast.makeText(this, "Vui lòng chọn ít nhất một ngựa để cược!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (totalBet > currentPoints) {
+            Toast.makeText(this, "Không đủ điểm để cược! Điểm hiện tại: " + currentPoints, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
     private void startRace() {
@@ -95,21 +154,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkResult(int winner) {
         String msg = "Ngựa " + (winner + 1) + " thắng!\n";
-        int reward = 0;
+        int totalBet = 0;
+        int totalReward = 0;
+        boolean won = false;
 
-        if (checks[winner].isChecked()) {
-            String betStr = bets[winner].getText().toString();
-            int bet = betStr.isEmpty() ? 0 : Integer.parseInt(betStr);
-            reward = bet * 2;
-            totalWin += reward;
-            msg += "Bạn thắng: " + reward + " điểm!";
-        } else {
-            msg += "Bạn đã cược sai!";
+        // Tính toán cược và phần thưởng
+        for (int i = 0; i < 3; i++) {
+            if (checks[i].isChecked()) {
+                String betStr = bets[i].getText().toString().trim();
+                int bet = betStr.isEmpty() ? 0 : Integer.parseInt(betStr);
+                totalBet += bet;
+                
+                if (i == winner) {
+                    totalReward = bet * 2; // Thắng được gấp đôi
+                    won = true;
+                }
+            }
         }
+
+        // Cập nhật điểm
+        currentPoints -= totalBet; // Trừ tiền cược
+        if (won) {
+            currentPoints += totalReward; // Cộng tiền thắng
+            msg += "Bạn thắng: +" + totalReward + " điểm!";
+        } else {
+            msg += "Bạn thua: -" + totalBet + " điểm!";
+        }
+
+        // Lưu điểm mới
+        userManager.updatePoints(currentPoints);
+        userManager.updateGameStats(won);
+
+        updatePointsDisplay();
 
         winBox.setVisibility(View.VISIBLE);
         winnerText.setText("Ngựa " + (winner + 1) + " chiến thắng!");
-        totalWinText.setText("Tổng điểm thắng đang có: " + totalWin);
+        totalWinText.setText("Điểm sau ván: " + currentPoints);
 
         int[] horseIcons = {
                 R.drawable.horse1,
@@ -118,6 +198,27 @@ public class MainActivity extends AppCompatActivity {
         };
         winnerIcon.setImageResource(horseIcons[winner]);
 
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+
+        // Kiểm tra hết điểm
+        if (currentPoints <= 0) {
+            Toast.makeText(this, "Bạn đã hết điểm! Quay về menu để xem thống kê.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void updatePointsDisplay() {
+        currentPointsText.setText("Điểm hiện tại: " + currentPoints);
+    }
+
+    private void goToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToMenu() {
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
