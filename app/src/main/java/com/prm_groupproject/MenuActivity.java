@@ -2,17 +2,24 @@ package com.prm_groupproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MenuActivity extends AppCompatActivity {
     
     private TextView tvWelcome, tvTotalPoints, tvGamesPlayed, tvGamesWon, tvWinRate;
     private Button btnPlayGame, btnLogout;
     private UserManager userManager;
+    ListView listView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +46,25 @@ public class MenuActivity extends AppCompatActivity {
         // Set listeners
         btnPlayGame.setOnClickListener(v -> goToGame());
         btnLogout.setOnClickListener(v -> showLogoutDialog());
-        
+
+        listView = findViewById(R.id.listViewLeaderboard);
+        userManager = new UserManager(this);
+
+        List<User> users = userManager.getAllUsers();
+        Collections.sort(users, (a, b) -> b.totalPoints - a.totalPoints);
+
+        List<User> top3 = users.size() > 3 ? users.subList(0, 3) : users;
+
+        List<String> top3Display = top3.stream()
+                .map(u -> u.username + " - " + u.totalPoints + " điểm")
+                .collect(Collectors.toList());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1,
+                top3Display);
+        listView.setAdapter(adapter);
+
+
         // Load user data
         loadUserData();
     }
@@ -52,24 +77,23 @@ public class MenuActivity extends AppCompatActivity {
             loadUserData();
         }
     }
-    
+
     private void loadUserData() {
-        String username = userManager.getUsername();
-        int totalPoints = userManager.getTotalPoints();
-        int gamesPlayed = userManager.getGamesPlayed();
-        int gamesWon = userManager.getGamesWon();
-        
-        // Tính win rate
-        double winRate = gamesPlayed > 0 ? (double) gamesWon / gamesPlayed * 100 : 0;
-        
-        // Update UI
-        tvWelcome.setText("Chào mừng, " + username + "!");
-        tvTotalPoints.setText("Tổng điểm: " + totalPoints);
-        tvGamesPlayed.setText("Số ván đã chơi: " + gamesPlayed);
-        tvGamesWon.setText("Số ván thắng: " + gamesWon);
+        User user = userManager.getCurrentUser();
+        if (user == null) return;
+
+        double winRate = user.loseCount + user.winCount > 0
+                ? (double) user.winCount / (user.winCount + user.loseCount) * 100
+                : 0;
+
+        tvWelcome.setText("Chào mừng, " + user.username + "!");
+        tvTotalPoints.setText("Tổng điểm: " + user.totalPoints);
+        tvGamesPlayed.setText("Số ván đã chơi: " + (user.winCount + user.loseCount));
+        tvGamesWon.setText("Số ván thắng: " + user.winCount);
         tvWinRate.setText(String.format("Tỷ lệ thắng: %.1f%%", winRate));
     }
-    
+
+
     private void goToGame() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -80,7 +104,7 @@ public class MenuActivity extends AppCompatActivity {
             .setTitle("Đăng xuất")
             .setMessage("Bạn có chắc muốn đăng xuất?")
             .setPositiveButton("Có", (dialog, which) -> {
-                userManager.logoutUser();
+                userManager.logout();
                 Toast.makeText(this, "Đã đăng xuất!", Toast.LENGTH_SHORT).show();
                 goToLogin();
             })

@@ -2,148 +2,134 @@ package com.prm_groupproject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserManager {
-    private static final String PREFS_NAME = "HorseRacingPrefs";
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_PASSWORD = "password";
-    private static final String KEY_TOTAL_POINTS = "total_points";
-    private static final String KEY_GAMES_PLAYED = "games_played";
-    private static final String KEY_GAMES_WON = "games_won";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-    
+    private static final String PREFS_NAME = "user_prefs";
+    private static final String USERS_KEY = "users";
+    private static final String LOGGED_IN_KEY = "logged_in_user";
+
     private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
-    
+    private Gson gson;
+
     public UserManager(Context context) {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = prefs.edit();
+        gson = new Gson();
     }
-    
-    // Hash password để bảo mật
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return password; // Fallback nếu không hash được
-        }
+
+    public List<User> getAllUsers() {
+        String json = prefs.getString(USERS_KEY, "[]");
+        Type type = new TypeToken<List<User>>() {}.getType();
+        List<User> users = gson.fromJson(json, type);
+        return users != null ? users : new ArrayList<>();
     }
-    
-    // Đăng ký tài khoản mới
+
+    public void saveAllUsers(List<User> users) {
+        String json = gson.toJson(users);
+        prefs.edit().putString(USERS_KEY, json).apply();
+    }
+
     public boolean registerUser(String username, String password) {
-        if (username == null || username.trim().isEmpty() || 
-            password == null || password.trim().isEmpty()) {
-            return false;
+        List<User> users = getAllUsers();
+        for (User u : users) {
+            if (u.username.equals(username)) return false; // tài khoản tồn tại
         }
-        
-        // Kiểm tra username đã tồn tại chưa
-        if (prefs.contains(KEY_USERNAME)) {
-            return false; // Đã có tài khoản
-        }
-        
-        // Lưu thông tin user
-        editor.putString(KEY_USERNAME, username.trim());
-        editor.putString(KEY_PASSWORD, hashPassword(password));
-        editor.putInt(KEY_TOTAL_POINTS, 1000); // Điểm khởi đầu
-        editor.putInt(KEY_GAMES_PLAYED, 0);
-        editor.putInt(KEY_GAMES_WON, 0);
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        
-        return editor.commit();
+        String hashedPassword = hashPassword(password);
+        users.add(new User(username, hashedPassword, 1000, 0, 0));
+        saveAllUsers(users);
+        return true;
     }
-    
-    // Đăng nhập
+
     public boolean loginUser(String username, String password) {
-        if (username == null || password == null) return false;
-        
-        String savedUsername = prefs.getString(KEY_USERNAME, "");
-        String savedPassword = prefs.getString(KEY_PASSWORD, "");
-        
-        if (savedUsername.equals(username.trim()) && 
-            savedPassword.equals(hashPassword(password))) {
-            editor.putBoolean(KEY_IS_LOGGED_IN, true);
-            editor.apply();
-            return true;
+        String hashedPassword = hashPassword(password);
+        for (User u : getAllUsers()) {
+            if (u.username.equals(username) && u.password.equals(hashedPassword)) {
+                prefs.edit().putString(LOGGED_IN_KEY, username).apply();
+                return true;
+            }
         }
-        
         return false;
     }
-    
-    // Đăng xuất
-    public void logoutUser() {
-        editor.putBoolean(KEY_IS_LOGGED_IN, false);
-        editor.apply();
-    }
-    
-    // Kiểm tra đã đăng nhập chưa
-    public boolean isLoggedIn() {
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false);
-    }
-    
-    // Kiểm tra đã có tài khoản chưa
+
     public boolean hasAccount() {
-        return prefs.contains(KEY_USERNAME);
+        List<User> users = getAllUsers();
+        return users != null && !users.isEmpty();
     }
-    
-    // Lấy thông tin user
-    public String getUsername() {
-        return prefs.getString(KEY_USERNAME, "");
+
+    public boolean isLoggedIn() {
+        return prefs.contains(LOGGED_IN_KEY);
     }
-    
-    public int getTotalPoints() {
-        return prefs.getInt(KEY_TOTAL_POINTS, 1000);
+
+    public String getLoggedInUsername() {
+        return prefs.getString(LOGGED_IN_KEY, null);
     }
-    
-    public int getGamesPlayed() {
-        return prefs.getInt(KEY_GAMES_PLAYED, 0);
+
+    public User getCurrentUser() {
+        String username = getLoggedInUsername();
+        if (username == null) return null;
+        for (User u : getAllUsers()) {
+            if (u.username.equals(username)) return u;
+        }
+        return null;
     }
-    
-    public int getGamesWon() {
-        return prefs.getInt(KEY_GAMES_WON, 0);
+
+    public void updatePoints(int points) {
+        User current = getCurrentUser();
+        if (current == null) return;
+        List<User> users = getAllUsers();
+        for (User u : users) {
+            if (u.username.equals(current.username)) {
+                u.totalPoints = points;
+                break;
+            }
+        }
+        saveAllUsers(users);
     }
-    
-    // Cập nhật điểm số
-    public void updatePoints(int newPoints) {
-        editor.putInt(KEY_TOTAL_POINTS, newPoints);
-        editor.apply();
+
+    public void updateGameStats(boolean win) {
+        User current = getCurrentUser();
+        if (current == null) return;
+        List<User> users = getAllUsers();
+        for (User u : users) {
+            if (u.username.equals(current.username)) {
+                if (win) u.winCount++;
+                else u.loseCount++;
+                break;
+            }
+        }
+        saveAllUsers(users);
     }
-    
-    // Cập nhật thống kê game
-    public void updateGameStats(boolean won) {
-        int gamesPlayed = getGamesPlayed() + 1;
-        int gamesWon = getGamesWon() + (won ? 1 : 0);
-        
-        editor.putInt(KEY_GAMES_PLAYED, gamesPlayed);
-        editor.putInt(KEY_GAMES_WON, gamesWon);
-        editor.apply();
+
+    public void logout() {
+        prefs.edit().remove(LOGGED_IN_KEY).apply();
     }
-    
-    // Validate input
+
     public static boolean isValidUsername(String username) {
-        return username != null && username.trim().length() >= 3 && 
-               username.trim().length() <= 20 && username.matches("[a-zA-Z0-9_]+");
+        return username != null && username.matches("^[a-zA-Z0-9_]{3,20}$");
     }
-    
+
     public static boolean isValidPassword(String password) {
         return password != null && password.length() >= 4;
     }
-    
-    // Reset tài khoản (để test)
-    public void resetAccount() {
-        editor.clear();
-        editor.apply();
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return password; // fallback (rủi ro)
+        }
     }
 }

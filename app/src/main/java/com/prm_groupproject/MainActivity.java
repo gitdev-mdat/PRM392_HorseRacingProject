@@ -3,8 +3,11 @@ package com.prm_groupproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.view.View;
 import android.widget.*;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
@@ -19,8 +22,9 @@ public class MainActivity extends AppCompatActivity {
     Runnable runnable;
 
     ImageView winnerIcon;
-    TextView winnerText, totalWinText, currentPointsText;
+    TextView winnerText, totalWinText, currentPointsText, betWinResultText, betLoseResultText, betResultText;
     LinearLayout winBox;
+    Button btnRecharge;
 
     boolean isRacing = false;
     UserManager userManager;
@@ -64,9 +68,15 @@ public class MainActivity extends AppCompatActivity {
         totalWinText = findViewById(R.id.totalWinText);
         currentPointsText = findViewById(R.id.currentPointsText);
         winBox = findViewById(R.id.winBox);
+        betWinResultText = findViewById(R.id.betWinResultText);
+        betLoseResultText = findViewById(R.id.betLoseResultText);
+        betResultText = findViewById(R.id.betResultText);
+        btnRecharge = findViewById(R.id.btnRecharge);
 
+        btnRecharge.setOnClickListener(v -> showRechargeDialog());
         // Load điểm hiện tại
-        currentPoints = userManager.getTotalPoints();
+        User user = userManager.getCurrentUser();
+        currentPoints = user.totalPoints;
         updatePointsDisplay();
 
         btnStart.setOnClickListener(v -> {
@@ -120,6 +130,40 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void showRechargeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Nạp điểm");
+
+        final EditText input = new EditText(this);
+        input.setHint("Nhập số điểm muốn nạp");
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+
+        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
+            String inputStr = input.getText().toString().trim();
+            if (!inputStr.isEmpty()) {
+                try {
+                    int amount = Integer.parseInt(inputStr);
+                    if (amount > 0) {
+                        currentPoints += amount;
+                        userManager.updatePoints(currentPoints);
+                        updatePointsDisplay();
+                        Toast.makeText(this, "Nạp thành công: +" + amount + " điểm!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Số điểm phải lớn hơn 0!", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Số điểm không hợp lệ!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Vui lòng nhập số điểm!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
     private void startRace() {
         resetRace();
         isRacing = true;
@@ -145,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         handler.post(runnable);
     }
 
+
     private void resetRace() {
         handler.removeCallbacks(runnable);
         for (ProgressBar bar : progresses) bar.setProgress(0);
@@ -166,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 totalBet += bet;
                 
                 if (i == winner) {
-                    totalReward = bet * 2; // Thắng được gấp đôi
+                    totalReward += bet * 2; // Thắng được gấp đôi
                     won = true;
                 }
             }
@@ -176,8 +221,18 @@ public class MainActivity extends AppCompatActivity {
         currentPoints -= totalBet; // Trừ tiền cược
         if (won) {
             currentPoints += totalReward; // Cộng tiền thắng
+            betLoseResultText.setText("Tổng điểm đã cược: " + totalBet);
+            betWinResultText.setText("Tổng điểm thắng: " + totalReward);
+            if ((totalReward - totalBet) < 0) {
+                betResultText.setText("Bạn đã thua: " + Math.abs(totalReward - totalBet));
+            } else {
+                betResultText.setText("Bạn đã thắng: " + (totalReward - totalBet));
+            }
             msg += "Bạn thắng: +" + totalReward + " điểm!";
         } else {
+            betLoseResultText.setText("Tổng điểm đã cược: " + totalBet);
+            betWinResultText.setText("Tổng điểm thắng: " + totalReward);
+            betResultText.setText("bạn đã thua: " + totalBet);
             msg += "Bạn thua: -" + totalBet + " điểm!";
         }
 
