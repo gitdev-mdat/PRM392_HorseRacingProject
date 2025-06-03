@@ -8,6 +8,27 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/tvPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Người chơi: "
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/tvPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Điểm hiện có: 0"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="16dp"/>
+
+
         <!-- Mỗi hàng: checkbox + progress + bet -->
         <LinearLayout android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -96,6 +117,14 @@
                 android:layout_height="wrap_content"
                 android:text="Reset"
                 android:layout_marginLeft="16dp"/>
+
+            <Button
+                android:id="@+id/btnTopUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nạp điểm"
+                android:layout_marginLeft="16dp"/>
+
         </LinearLayout>
 
         <!-- Box hiện ngựa thắng -->
@@ -127,12 +156,44 @@
                 android:layout_marginTop="8dp" />
 
             <TextView
+                android:id="@+id/betWinResultText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/betLoseResultText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/betResultText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp" />
+
+            <TextView
                 android:id="@+id/totalWinText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng điểm thắng: 0"
+                android:text=""
                 android:layout_gravity="center"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đăng xuất"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal"/>
+
     </LinearLayout>
 </ScrollView>
