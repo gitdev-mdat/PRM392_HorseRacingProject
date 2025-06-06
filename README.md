@@ -1,73 +1,104 @@
-# PRM392_HorseRacingProject
-✅ 1. Quy tắc đặt tên ID trong layout (id của View)
-Loại View	Quy tắc đặt tên	Ví dụ
-Button	btn_<chức năng>	btnLogin, btnDangKy
-TextView	tv_<nội dung>	tvTitle, tvThongBao
-EditText	edt_<nội dung>	edtUsername, edtMatKhau
-ImageView	img_<nội dung>	imgAvatar, imgLogo
-ListView	lv_<nội dung>	lvDanhSach, lvTinNhan
-RecyclerView	rv_<nội dung>	rvSanPham, rvBinhLuan
-LinearLayout	layout_<vị trí> hoặc <nội dung>	layoutTop, layoutForm
-ConstraintLayout	tương tự	layoutContainer, layoutMain
+# 🐎 Horse Racing Game - Android Application
+[![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
+[![Java](https://img.shields.io/badge/Language-Java-orange.svg)](https://java.com)
 
-🔥 Tips: Tên nên viết bằng camelCase, rõ nghĩa, không viết tắt linh tinh khó hiểu.
+> **Ứng dụng game đua ngựa với hệ thống tài khoản và quản lý điểm số cho Android**
 
-✅ 2. Tên file layout (XML)
-Quy tắc: snake_case, mô tả chức năng/màn hình
 
-Ví dụ:
+## 📖 Mô tả dự án
 
-activity_login.xml
+**Horse Racing Game** là một ứng dụng game đua ngựa được phát triển cho nền tảng Android. Người chơi có thể đăng ký tài khoản, đặt cược vào các con ngựa và theo dõi thống kê game của mình.
 
-activity_register.xml
+### ✨ Tính năng chính
 
-item_product.xml (cho 1 item trong list)
+- 🔐 **Hệ thống tài khoản**: Đăng ký, đăng nhập với mật khẩu được mã hóa
+- 🎮 **Game đua ngựa**: 3 con ngựa chạy đua với animation thời gian thực
+- 💰 **Hệ thống cược**: Đặt cược điểm số với tỷ lệ thắng x2
+- 📊 **Thống kê**: Theo dõi số ván chơi, số ván thắng, tỷ lệ thắng
+- 💾 **Lưu trữ offline**: Dữ liệu được lưu local với SharedPreferences
+- 🎯 **Quản lý điểm**: Hệ thống điểm số persistent qua các phiên
 
-dialog_add_fruit.xml (giao diện dialog)
+## 📱 Screenshots
 
-🔁 Đặt tên theo chức năng UI, bắt đầu bằng activity_, fragment_, item_, dialog_,...
+*Thêm screenshots vào folder `/screenshots` và link ở đây*
 
-✅ 3. Tên class Activity / Fragment
-Quy tắc: PascalCase, kết thúc bằng Activity, Fragment
+| Register Screen | Login Screen | Menu Screen | Game Screen |
+|:---:|:---:|:---:|
+| ![Register](screenshots/register.png) | ![Login](screenshots/login.png) | ![Menu](screenshots/menu.png) | ![Game](screenshots/game.png) |
 
-Ví dụ:
+## 🛠️ Công nghệ sử dụng
 
-LoginActivity, MainActivity
+### **Core Technologies**
+- **Language**: Java 11+
+- **Platform**: Android (API 21+)
+- **IDE**: Android Studio
+- **Build System**: Gradle
 
-RegisterActivity
+### **Android Components**
+- **Activities**: 5 activities (Splash, Login, Register, Menu, Game)
+- **Layouts**: XML layouts với responsive design
+- **Storage**: SharedPreferences cho data persistence
+- **Threading**: Handler & Runnable cho animation
+- **Security**: SHA-256 password hashing
 
-HomeFragment, ProfileFragment
+### **UI/UX**
+- **Design Pattern**: Material Design guidelines
+- **Animations**: Progress bar animations cho horse racing
+- **User Experience**: Intuitive navigation flow
 
-✅ 4. Tên biến (variable)
-Loại biến	Quy tắc đặt tên	Ví dụ
-Biến thường	camelCase	userName, listProduct
-Biến hằng số (const)	SCREAMING_SNAKE_CASE	MAX_LOGIN_TRY, API_KEY
-Biến trong XML Binding	giống ID View	btnLogin, tvWelcome
+### **Architecture**
+```
+├── Activities (UI Layer)
+├── UserManager (Business Logic)
+├── SharedPreferences (Data Layer)
+└── Resources (Assets & Layouts)
+```
 
-✅ 5. Tên Adapter, Model, Utils
-Loại class	Tên gợi ý	Ví dụ
-Model	PascalCase, dạng danh từ	User, Product, Fruit
-Adapter	PascalCase, kết thúc Adapter	FruitAdapter, UserAdapter
-Helper/Utils	Kết thúc Helper, Utils	StringUtils, DateHelper
 
-✅ 6. Tên hàm (method)
-Quy tắc: camelCase, bắt đầu bằng động từ
+## 🚀 Hướng dẫn cài đặt
 
-Ví dụ:
+### **Yêu cầu hệ thống**
+- Android Studio 4.0+
+- JDK 11+
+- Android SDK (API 21+)
+- Gradle 7.0+
 
-getUserInfo()
+## 🎯 Hướng dẫn sử dụng
 
-loadData()
+### **1. Đăng ký tài khoản**
+- Mở app lần đầu → Màn hình đăng ký
+- Nhập username (3-20 ký tự)
+- Nhập password (tối thiểu 4 ký tự)
+- Nhận 1000 điểm khởi đầu
 
-handleLogin()
+### **2. Chơi game**
+- Chọn ngựa muốn cược (có thể chọn nhiều)
+- Nhập số điểm cược
+- Bấm START để bắt đầu đua
+- Thắng được x2 số điểm đã cược
 
-onRegisterClick()
+### **3. Xem thống kê**
+- Menu hiển thị tổng điểm
+- Số ván đã chơi / thắng
+- Tỷ lệ thắng phần trăm
 
-🧠 Tổng Kết: Tư duy đặt tên = rõ ràng + logic + không dài dòng
-Thành phần	Quy tắc	Ví dụ
-View ID	prefix_nộiDung	btnSave, edtPassword
-Layout XML	snake_case	activity_home.xml, item_user
-Class	PascalCase	LoginActivity, UserAdapter
-Biến	camelCase	userList, productImage
-Hằng số	SCREAMING_SNAKE_CASE	DEFAULT_TIMEOUT, DB_VERSION
-Method	camelCase + động từ	handleClick(), loadImage()
+## 💡 Tính năng nổi bật
+
+### **🔒 Bảo mật**
+- Password được hash SHA-256
+- Validation input
+- Session management an toàn
+
+### **📊 Analytics**
+- Theo dõi behavior người chơi
+- Thống kê chi tiết
+- Persistence data
+
+### **🎨 UI/UX**
+- Material Design
+- Smooth animations
+- Intuitive navigation
+
+---
+
+⭐ **Star this repository if you find it helpful!** ⭐
